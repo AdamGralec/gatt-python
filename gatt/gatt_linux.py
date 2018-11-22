@@ -9,6 +9,7 @@ except ImportError:
     sys.exit(1)
 
 import re
+import uuid
 
 from gi.repository import GObject
 
@@ -261,6 +262,17 @@ class Device:
 
         if managed:
             manager._manage_device(self)
+
+    def service_data(self):
+        try:
+            data = self._properties.Get('org.bluez.Device1', 'ServiceData')
+            dictionary = {}
+            for key, value in data.items():
+                dictionary[uuid.UUID(key)] = value
+
+            return dictionary
+        except dbus.exceptions.DBusException:
+            return {}
 
     def advertised(self):
         """
